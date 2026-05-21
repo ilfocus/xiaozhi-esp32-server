@@ -162,6 +162,21 @@ plugins:
       - ".wav"
       - ".p3"
     refresh_time: 300 # 刷新音乐列表的时间间隔，单位为秒
+  ai_music:
+    provider: "mock"  # mock用于本地验证；接入真实服务时改为generic_http并配置下方接口
+    output_dir: "data/generated_music"
+    default_style: "流行"
+    base_url: ""
+    api_key: ""
+    generate_endpoint: ""
+    status_endpoint: ""
+    audio_url_field: "audio_url"
+    task_id_field: "id"
+    status_field: "status"
+    poll_interval: 5
+    timeout_seconds: 180
+    initial_notice_delay: 1.5
+    allow_mock: true
   search_from_ragflow:
     # 知识库的描述信息，方便大语言模型知道什么时候调用
     description: "当用户问xxx时，调用本方法，使用知识库中的信息回答问题"
@@ -270,6 +285,10 @@ Intent:
       - get_weather
       - get_news_from_newsnow
       - play_music
+      - ai_music
+      - save_ai_music
+      - redo_ai_music
+      - play_my_music
   function_call:
     # 不需要动type
     type: function_call
@@ -286,6 +305,10 @@ Intent:
       # play_music是服务器自带的音乐播放，hass_play_music是通过home assistant控制的独立外部程序音乐播放
       # 如果用了hass_play_music，就不要开启play_music，两者只留一个
       - play_music
+      - ai_music
+      - save_ai_music
+      - redo_ai_music
+      - play_my_music
       #- hass_get_state
       #- hass_set_state
       #- hass_play_music

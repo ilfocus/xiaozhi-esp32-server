@@ -219,6 +219,62 @@ async def generate_and_save_chat_title(session_id: str) -> Optional[Dict]:
         return None
 
 
+async def save_ai_music(
+    mac_address: str,
+    title: str,
+    file_path: str,
+    lyrics: str = "",
+    style: str = "",
+    prompt: str = "",
+    file_ext: str = "",
+    provider: str = "",
+    provider_task_id: str = "",
+) -> Optional[Dict]:
+    """保存用户确认满意的AI音乐元数据"""
+    if not ManageApiClient._instance:
+        return None
+    try:
+        return await ManageApiClient._instance._execute_async_request(
+            "POST",
+            "/agent/music/save",
+            json={
+                "macAddress": mac_address,
+                "title": title,
+                "lyrics": lyrics,
+                "style": style,
+                "prompt": prompt,
+                "filePath": file_path,
+                "fileExt": file_ext,
+                "provider": provider,
+                "providerTaskId": provider_task_id,
+            },
+        )
+    except Exception as e:
+        print(f"保存AI音乐失败: {e}")
+        return None
+
+
+async def list_ai_music(
+    mac_address: str, keyword: str = "", limit: int = 20
+) -> Optional[Dict]:
+    """查询当前账号已保存的AI音乐"""
+    if not ManageApiClient._instance:
+        return None
+    try:
+        return await ManageApiClient._instance._execute_async_request(
+            "POST",
+            "/agent/music/list",
+            json={
+                "macAddress": mac_address,
+                "keyword": keyword,
+                "limit": limit,
+            },
+        )
+    except Exception as e:
+        print(f"查询AI音乐失败: {e}")
+        return None
+
+
 async def report(
     mac_address: str, session_id: str, chat_type: int, content: str, audio, report_time
 ) -> Optional[Dict]:
