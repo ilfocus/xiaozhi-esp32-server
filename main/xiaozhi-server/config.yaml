@@ -163,9 +163,16 @@ plugins:
       - ".p3"
     refresh_time: 300 # 刷新音乐列表的时间间隔，单位为秒
   ai_music:
-    provider: "mock"  # mock用于本地验证；接入真实服务时改为generic_http并配置下方接口
+    provider: "mock"  # mock用于本地验证；接入MiniMax时改为minimax并配置api_key
     output_dir: "data/generated_music"
     default_style: "流行"
+    model: "music-2.6"
+    auto_generate_lyrics: true
+    lyrics_optimizer: false
+    sample_rate: 44100
+    bitrate: 256000
+    format: "mp3"
+    request_timeout: 300
     base_url: ""
     api_key: ""
     generate_endpoint: ""

@@ -913,6 +913,7 @@ export default {
   'modelConfig.tts': 'Văn bản thành giọng nói',
   'modelConfig.memory': 'Bộ nhớ',
   'modelConfig.rag': 'RAG',
+  'modelConfig.ai_music': 'Nhạc AI',
   'modelConfig.modelId': 'ID mô hình',
   'modelConfig.modelName': 'Tên mô hình',
   'modelConfig.provider': 'Loại giao diện',
@@ -1070,6 +1071,7 @@ export default {
   'providerManagement.modelType.VAD': 'Phát hiện hoạt động giọng nói',
   'providerManagement.modelType.Plugin': 'Công cụ plugin',
   'providerManagement.modelType.RAG': 'RAG',
+  'providerManagement.modelType.AI_MUSIC': 'Nhạc AI',
 
   // Provider Dialog translations
   'providerDialog.category': 'Danh mục',

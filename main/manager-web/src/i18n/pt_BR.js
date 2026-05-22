@@ -913,6 +913,7 @@ export default {
   'modelConfig.tts': 'Texto para Fala',
   'modelConfig.memory': 'Memória',
   'modelConfig.rag': 'RAG',
+  'modelConfig.ai_music': 'Música IA',
   'modelConfig.modelId': 'ID do Modelo',
   'modelConfig.modelName': 'Nome do Modelo',
   'modelConfig.provider': 'Tipo de Interface',
@@ -1070,6 +1071,7 @@ export default {
   'providerManagement.modelType.VAD': 'Detecção de Atividade de Voz',
   'providerManagement.modelType.Plugin': 'Ferramenta de Plugin',
   'providerManagement.modelType.RAG': 'RAG',
+  'providerManagement.modelType.AI_MUSIC': 'Música IA',
 
   // Diálogo de provedor
   'providerDialog.category': 'Categoria',

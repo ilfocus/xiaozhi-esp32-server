@@ -911,6 +911,7 @@ export default {
   'modelConfig.tts': '语音合成',
   'modelConfig.memory': '记忆',
   'modelConfig.rag': '知识库',
+  'modelConfig.ai_music': 'AI音乐',
   'modelConfig.modelId': '模型ID',
   'modelConfig.modelName': '模型名称',
   'modelConfig.provider': '接口类型',
@@ -1068,6 +1069,7 @@ export default {
   'providerManagement.modelType.VAD': '语音活动检测',
   'providerManagement.modelType.Plugin': '插件工具',
   'providerManagement.modelType.RAG': '知识库',
+  'providerManagement.modelType.AI_MUSIC': 'AI音乐',
 
   // Provider Dialog 翻译
   'providerDialog.category': '类别',

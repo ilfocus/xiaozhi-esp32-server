@@ -913,6 +913,7 @@ export default {
   'modelConfig.tts': 'Text-zu-Sprache',
   'modelConfig.memory': 'Speicher',
   'modelConfig.rag': 'RAG',
+  'modelConfig.ai_music': 'AI-Musik',
   'modelConfig.modelId': 'Modell-ID',
   'modelConfig.modelName': 'Modellname',
   'modelConfig.provider': 'Schnittstellentyp',
@@ -1070,6 +1071,7 @@ export default {
   'providerManagement.modelType.VAD': 'Sprachaktivitätserkennung',
   'providerManagement.modelType.Plugin': 'Plugin-Werkzeug',
   'providerManagement.modelType.RAG': 'RAG',
+  'providerManagement.modelType.AI_MUSIC': 'AI-Musik',
 
   // Provider Dialog translations
   'providerDialog.category': 'Kategorie',

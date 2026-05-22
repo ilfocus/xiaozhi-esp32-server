@@ -55,6 +55,9 @@
           <el-menu-item index="rag">
             <span class="menu-text">{{ $t("modelConfig.rag") }}</span>
           </el-menu-item>
+          <el-menu-item index="ai_music">
+            <span class="menu-text">{{ $t("modelConfig.ai_music") }}</span>
+          </el-menu-item>
         </el-menu>
 
         <!-- 右侧内容 -->
@@ -92,7 +95,7 @@
               ></el-table-column>
               <el-table-column :label="$t('modelConfig.provider')" align="center">
                 <template slot-scope="scope">
-                  {{ scope.row.configJson.type || $t("modelConfig.unknown") }}
+                  {{ scope.row.configJson.type || scope.row.configJson.provider || $t("modelConfig.unknown") }}
                 </template>
               </el-table-column>
               <el-table-column :label="$t('modelConfig.isEnabled')" align="center">

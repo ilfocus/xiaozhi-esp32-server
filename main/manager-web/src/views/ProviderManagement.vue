@@ -37,7 +37,7 @@
               </el-table-column>
 
               <el-table-column :label="$t('providerManagement.category')" prop="modelType" align="center" width="200">
-                <template slot="header" slot-scope="scope">
+                <template slot="header">
                   <el-dropdown trigger="click" @command="handleSelectModelType"
                     @visible-change="isDropdownOpen = $event">
                     <span class="dropdown-trigger" :class="{ 'active': isDropdownOpen }">
@@ -148,7 +148,8 @@ export default {
         { value: "Memory", labelKey: 'providerManagement.modelType.Memory' },
         { value: "VAD", labelKey: 'providerManagement.modelType.VAD' },
         { value: "Plugin", labelKey: 'providerManagement.modelType.Plugin' },
-        { value: "RAG", labelKey: 'providerManagement.modelType.RAG' }
+        { value: "RAG", labelKey: 'providerManagement.modelType.RAG' },
+        { value: "AI_MUSIC", labelKey: 'providerManagement.modelType.AI_MUSIC' }
       ],
       currentPage: 1,
       loading: false,

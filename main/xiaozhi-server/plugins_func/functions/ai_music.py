@@ -3,6 +3,7 @@ import os
 import uuid
 from typing import TYPE_CHECKING
 
+from core.handle.sendAudioHandle import send_tts_message
 from core.providers.ai_music import build_ai_music_provider
 from core.providers.tts.dto.dto import ContentType, SentenceType, TTSMessageDTO
 from core.utils.dialogue import Message
@@ -136,7 +137,7 @@ def play_my_music(conn: "ConnectionHandler", song_name: str = ""):
 
 async def _handle_ai_music(conn: "ConnectionHandler", prompt: str, title: str, lyrics: str, style: str):
     try:
-        config = conn.config.get("plugins", {}).get("ai_music", {})
+        config = _resolve_ai_music_config(conn)
         title = title or _guess_title(prompt)
         await _speak(conn, f"收到，我开始制作《{title}》，生成好以后会直接播放试听。")
         await asyncio.sleep(float(config.get("initial_notice_delay", 1.5)))
@@ -221,6 +222,17 @@ async def _handle_play_my_music(conn: "ConnectionHandler", song_name: str):
         await _speak(conn, "播放你保存的AI歌曲失败了，请稍后再试。")
 
 
+def _resolve_ai_music_config(conn: "ConnectionHandler"):
+    plugin_config = dict(conn.config.get("plugins", {}).get("ai_music", {}) or {})
+    model_id = plugin_config.get("ai_music_model_id")
+    model_configs = conn.config.get("AI_MUSIC", {}) or {}
+    if model_id and isinstance(model_configs, dict) and model_id in model_configs:
+        resolved = dict(model_configs.get(model_id) or {})
+        resolved.update(plugin_config)
+        return resolved
+    return plugin_config
+
+
 def _submit_task(conn: "ConnectionHandler", coro):
     if not conn.loop or not conn.loop.is_running():
         return False
@@ -229,8 +241,11 @@ def _submit_task(conn: "ConnectionHandler", coro):
 
 
 async def _speak(conn: "ConnectionHandler", text: str):
+    await _wait_for_tts_queue_idle(conn)
     sentence_id = uuid.uuid4().hex
     conn.sentence_id = sentence_id
+    await send_tts_message(conn, "start", None)
+    conn.client_is_speaking = True
     conn.tts.store_tts_text(sentence_id, text)
     conn.dialogue.put(Message(role="assistant", content=text))
     conn.tts.tts_text_queue.put(TTSMessageDTO(sentence_id=sentence_id, sentence_type=SentenceType.FIRST, content_type=ContentType.ACTION))
@@ -239,14 +254,25 @@ async def _speak(conn: "ConnectionHandler", text: str):
 
 
 async def _play_file(conn: "ConnectionHandler", file_path: str, text: str):
+    await _wait_for_tts_queue_idle(conn)
     sentence_id = uuid.uuid4().hex
     conn.sentence_id = sentence_id
+    await send_tts_message(conn, "start", None)
+    conn.client_is_speaking = True
     conn.tts.store_tts_text(sentence_id, text)
     conn.dialogue.put(Message(role="assistant", content=text))
     conn.tts.tts_text_queue.put(TTSMessageDTO(sentence_id=sentence_id, sentence_type=SentenceType.FIRST, content_type=ContentType.ACTION))
     conn.tts.tts_text_queue.put(TTSMessageDTO(sentence_id=sentence_id, sentence_type=SentenceType.MIDDLE, content_type=ContentType.TEXT, content_detail=text))
     conn.tts.tts_text_queue.put(TTSMessageDTO(sentence_id=sentence_id, sentence_type=SentenceType.MIDDLE, content_type=ContentType.FILE, content_file=file_path))
     conn.tts.tts_text_queue.put(TTSMessageDTO(sentence_id=sentence_id, sentence_type=SentenceType.LAST, content_type=ContentType.ACTION))
+
+
+async def _wait_for_tts_queue_idle(conn: "ConnectionHandler", timeout: float = 5.0):
+    deadline = asyncio.get_running_loop().time() + timeout
+    while asyncio.get_running_loop().time() < deadline:
+        if conn.tts.tts_text_queue.empty():
+            return
+        await asyncio.sleep(0.1)
 
 
 def _build_output_dir(conn: "ConnectionHandler", config):

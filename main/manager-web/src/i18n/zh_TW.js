@@ -913,6 +913,7 @@ export default {
   'modelConfig.tts': '語音合成',
   'modelConfig.memory': '記憶',
   'modelConfig.rag': '知識庫',
+  'modelConfig.ai_music': 'AI音樂',
   'modelConfig.modelId': '模型ID',
   'modelConfig.modelName': '模型名稱',
   'modelConfig.provider': '接口類型',
@@ -1070,6 +1071,7 @@ export default {
   'providerManagement.modelType.VAD': '語音活動檢測',
   'providerManagement.modelType.Plugin': '插件工具',
   'providerManagement.modelType.RAG': '知識庫',
+  'providerManagement.modelType.AI_MUSIC': 'AI音樂',
 
   // Provider Dialog 翻譯
   'providerDialog.category': '類別',

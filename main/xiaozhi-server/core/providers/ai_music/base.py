@@ -34,6 +34,10 @@ def build_ai_music_provider(config: Optional[Dict]) -> AiMusicProvider:
         from .mock import MockAiMusicProvider
 
         return MockAiMusicProvider(config)
+    if provider == "minimax":
+        from .minimax import MiniMaxAiMusicProvider
+
+        return MiniMaxAiMusicProvider(config)
 
     from .generic_http import GenericHttpAiMusicProvider
 

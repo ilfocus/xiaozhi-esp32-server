@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +32,9 @@ import xiaozhi.modules.model.service.ModelConfigService;
 @Slf4j
 public class AgentPluginMappingServiceImpl extends ServiceImpl<AgentPluginMappingMapper, AgentPluginMapping>
         implements AgentPluginMappingService {
+    private static final String AI_MUSIC_PLUGIN_ID = "SYSTEM_PLUGIN_AI_MUSIC";
+    private static final String DEFAULT_AI_MUSIC_MODEL_ID = "AI_MUSIC_MiniMax";
+
     private final AgentPluginMappingMapper agentPluginMappingMapper;
     private final KnowledgeBaseService knowledgeBaseService;
     private final ModelConfigService modelConfigService;
@@ -65,6 +69,7 @@ public class AgentPluginMappingServiceImpl extends ServiceImpl<AgentPluginMappin
                 list.remove(i);
             }
         }
+        mergeAiMusicModelConfig(list);
         if (knowledgeBaseMap.size() > 0) {
             for (String pluginCode : knowledgeBaseMap.keySet()) {
                 List<KnowledgeBaseEntity> knowledgeBaseList = knowledgeBaseMap.get(pluginCode);
@@ -95,6 +100,62 @@ public class AgentPluginMappingServiceImpl extends ServiceImpl<AgentPluginMappin
             }
         }
         return list;
+    }
+
+    private void mergeAiMusicModelConfig(List<AgentPluginMapping> list) {
+        for (int i = list.size() - 1; i >= 0; i--) {
+            AgentPluginMapping mapping = list.get(i);
+            if (!AI_MUSIC_PLUGIN_ID.equals(mapping.getPluginId())) {
+                continue;
+            }
+
+            Map<String, Object> paramInfo = parseParamInfo(mapping.getParamInfo());
+            String modelId = String.valueOf(paramInfo.getOrDefault("ai_music_model_id", DEFAULT_AI_MUSIC_MODEL_ID));
+            ModelConfigEntity modelConfigEntity = modelConfigService.getModelByIdFromCache(modelId);
+            if (modelConfigEntity == null || modelConfigEntity.getConfigJson() == null) {
+                log.warn("AI音乐插件配置的模型不存在，agentId={}, modelId={}", mapping.getAgentId(), modelId);
+                list.remove(i);
+                continue;
+            }
+
+            removeProviderConfig(paramInfo);
+            Map<String, Object> mergedParamInfo = new HashMap<>(modelConfigEntity.getConfigJson());
+            mergedParamInfo.putIfAbsent("provider", modelConfigEntity.getModelCode());
+            mergedParamInfo.putAll(paramInfo);
+            mergedParamInfo.put("ai_music_model_id", modelId);
+
+            // 密钥等服务商参数来自 ai_model_config，不再由插件映射表保存。
+            mapping.setParamInfo(JsonUtils.toJsonString(mergedParamInfo));
+        }
+    }
+
+    private void removeProviderConfig(Map<String, Object> paramInfo) {
+        paramInfo.remove("provider");
+        paramInfo.remove("api_key");
+        paramInfo.remove("base_url");
+        paramInfo.remove("model");
+        paramInfo.remove("generate_endpoint");
+        paramInfo.remove("status_endpoint");
+        paramInfo.remove("audio_url_field");
+        paramInfo.remove("task_id_field");
+        paramInfo.remove("status_field");
+        paramInfo.remove("poll_interval");
+        paramInfo.remove("timeout_seconds");
+        paramInfo.remove("request_timeout");
+        paramInfo.remove("auto_generate_lyrics");
+        paramInfo.remove("lyrics_optimizer");
+        paramInfo.remove("sample_rate");
+        paramInfo.remove("bitrate");
+        paramInfo.remove("format");
+    }
+
+    private Map<String, Object> parseParamInfo(String paramInfo) {
+        if (StringUtils.isBlank(paramInfo)) {
+            return new HashMap<>();
+        }
+        Map<String, Object> parsed = JsonUtils.parseObject(paramInfo, new TypeReference<Map<String, Object>>() {
+        });
+        return parsed == null ? new HashMap<>() : new HashMap<>(parsed);
     }
 
     @Override

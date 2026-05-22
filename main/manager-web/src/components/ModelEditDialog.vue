@@ -251,11 +251,12 @@ export default {
                 });
               }
             }
-            this.pendingProviderType = model.configJson.type;
+            const providerCode = this.getProviderCode(model);
+            this.pendingProviderType = providerCode;
             this.pendingModelData = model;
 
             if (this.providersLoaded) {
-              this.loadProviderFields(model.configJson.type);
+              this.loadProviderFields(providerCode);
             } else {
               this.loadProviders();
             }
@@ -302,7 +303,7 @@ export default {
     loadProviders() {
       if (this.providersLoaded) return;
 
-      Api.model.getModelProviders(this.modelType, (data) => {
+      Api.model.getModelProviders(this.getModelTypeForApi(), (data) => {
         this.providers = data.map((item) => ({
           label: item.name,
           value: String(item.providerCode),
@@ -314,6 +315,13 @@ export default {
           this.loadProviderFields(this.pendingProviderType);
         }
       });
+    },
+    getModelTypeForApi() {
+      return this.modelType === "ai_music" ? "AI_MUSIC" : this.modelType;
+    },
+    getProviderCode(model) {
+      const configJson = model.configJson || {};
+      return configJson.type || configJson.provider || model.modelCode;
     },
     loadProviderFields(providerCode) {
       if (this.allProvidersData) {
@@ -343,6 +351,13 @@ export default {
     },
     processModelData(model) {
       let configJson = model.configJson || {};
+      const providerCode = this.getProviderCode(model);
+      if (!configJson.type) {
+        configJson.type = providerCode;
+      }
+      if (this.getModelTypeForApi() === "AI_MUSIC" && !configJson.provider) {
+        configJson.provider = providerCode;
+      }
       this.dynamicCallInfoFields.forEach((field) => {
         if (!configJson.hasOwnProperty(field.prop)) {
           configJson[field.prop] = "";
