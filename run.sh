@@ -5,7 +5,9 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 COMPOSE_FILE="${ROOT_DIR}/main/xiaozhi-server/docker-compose_all.yml"
 SERVER_IMAGE="ghcr.nju.edu.cn/xinnan-tech/xiaozhi-esp32-server:server_latest"
+WEB_IMAGE="ghcr.nju.edu.cn/xinnan-tech/xiaozhi-esp32-server:web_latest"
 SERVER_SERVICE="xiaozhi-esp32-server"
+WEB_SERVICE="xiaozhi-esp32-server-web"
 SERVER_CONTAINER="xiaozhi-esp32-server"
 
 usage() {
@@ -40,10 +42,13 @@ restart() {
   echo "Building server image: ${SERVER_IMAGE}"
   docker build -f "${ROOT_DIR}/Dockerfile-server" -t "${SERVER_IMAGE}" "${ROOT_DIR}"
 
-  echo "Recreating server container: ${SERVER_CONTAINER}"
-  docker compose -f "${COMPOSE_FILE}" up -d --no-deps --force-recreate "${SERVER_SERVICE}"
+  echo "Building web image: ${WEB_IMAGE}"
+  docker build -f "${ROOT_DIR}/Dockerfile-web" -t "${WEB_IMAGE}" "${ROOT_DIR}"
 
-  echo "Server restarted. Recent logs:"
+  echo "Recreating server and web containers..."
+  docker compose -f "${COMPOSE_FILE}" up -d --no-deps --force-recreate "${SERVER_SERVICE}" "${WEB_SERVICE}"
+
+  echo "Services restarted. Recent server logs:"
   docker logs --tail 40 "${SERVER_CONTAINER}"
 }
 
