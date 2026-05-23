@@ -1,6 +1,7 @@
 package xiaozhi.modules.device.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
@@ -51,6 +52,7 @@ public class DeviceReportReqDTO implements Serializable {
     private OtaInfo ota;
 
     @Schema(description = "板子配置信息")
+    @JsonDeserialize(using = BoardInfoDeserializer.class)
     private BoardInfo board;
 
     // endregion
