@@ -598,6 +598,24 @@ class ConnectionHandler:
                 role="assistant", content="再见，下次再聊~", is_temporary=True,
             ))
 
+        # 示例3：save_ai_music（用户说保存歌曲时必须调工具，不能只口头回复）
+        if "save_ai_music" in tool_names:
+            tc_id = "fewshot_save_music_001"
+            self.dialogue.put(Message(role="user", content="帮我保存一下", is_temporary=True))
+            self.dialogue.put(Message(
+                role="assistant",
+                tool_calls=[{
+                    "id": tc_id,
+                    "function": {"arguments": '{}', "name": "save_ai_music"},
+                    "type": "function", "index": 0,
+                }],
+                is_temporary=True,
+            ))
+            self.dialogue.put(Message(
+                role="tool", tool_call_id=tc_id,
+                content="歌曲已保存", is_temporary=True,
+            ))
+
         self.logger.bind(tag=TAG).debug("已注入工具调用 few-shot 示例")
 
     def _init_report_threads(self):

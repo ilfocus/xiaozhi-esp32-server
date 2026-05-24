@@ -49,7 +49,7 @@ save_ai_music_function_desc = {
     "type": "function",
     "function": {
         "name": "save_ai_music",
-        "description": "当用户对刚刚生成的AI歌曲表示满意、确认保存、收藏时调用。",
+        "description": "保存刚刚生成的AI歌曲到用户歌单。当用户说「保存」「存一下」「收藏」「留着」「存起来」「帮我保存」等任何表示想保留刚生成歌曲的话时，必须调用此工具。不调用此工具歌曲就不会被保存，仅靠口头回复无法完成保存操作。",
         "parameters": {"type": "object", "properties": {}},
     },
 }
